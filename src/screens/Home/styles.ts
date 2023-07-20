@@ -28,24 +28,23 @@ export const Content = styled.View`
   margin-bottom: 15px;
   justify-content: space-between;
   flex-direction: row;
- 
 `;
 
 export const Input_item = styled.View`
-width: 42%;
+  width: 42%;
 `;
 export const Input_price = styled.View`
-width: 22%;
+  width: 22%;
 `;
 export const Input_amount = styled.View`
-width: 16%;
+  width: 16%;
 `;
 
 export const Empty_itens = styled.Text`
-color: ${({theme}) => theme.COLORS.GRAY_200};
-font-size: 14px;
-padding-top: 70%;
-text-align: center;
+  color: ${({ theme }) => theme.COLORS.GRAY_200};
+  font-size: 14px;
+  padding-top: 70%;
+  text-align: center;
 `;
 
 export const Buttonadd = styled(TouchableOpacity)`
@@ -65,5 +64,3 @@ export const Iconadd = styled(AntDesign).attrs(({ theme }) => ({
   padding-right: 8px;
   padding-left: 2px;
 `;
-
-

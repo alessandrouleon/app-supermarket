@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
 import { ButtonIcon } from "../ButtonIcon";
 import { Container, Icon, Name } from "./styles";
 
 interface Props {
   name: string;
-  price?: string;
-  amount?: string;
+  price?: ReactNode;
+  amount?: ReactNode;
   onRemove: () => void;
 }
 export function Purchase({ name, price, amount, onRemove }: Props) {

@@ -14,6 +14,7 @@ import { Input } from "../../components/Input";
 import { Header } from "../../components/Header";
 import { Purchase } from "../../components/Purchase";
 import { Alert, FlatList, Text } from "react-native";
+import CurrencyFormatter from "./CurrencyFormatter";
 
 interface Props {
   name: string;
@@ -23,27 +24,42 @@ interface Props {
 
 export function Home() {
   const [itens, setItens] = useState<Props[]>([]);
-  const [values, setValues] = useState<Props>({name: '', price: '', qtd: ''});
+  const [values, setValues] = useState<Props>({ name: "", price: "", qtd: "" });
   const [sum, setSum] = useState(0);
 
   function handleChange(): void {
-    if (values.name.trim() === "" || values.price.trim() === "" || values.qtd.trim() === ""){
+    if (
+      values.name.trim() === "" ||
+      values.price.trim() === "" ||
+      values.qtd.trim() === ""
+    ) {
       return Alert.alert(" ", "Campo não pode ser vazio!");
     }
 
+    const findByName = itens.filter((item) => item.name === values.name);
+    if (findByName.length) return Alert.alert(" ", "Item ja cadastrado!");
+
     setItens((prevState) => [...prevState, values]);
-    setSum(sum + (Number(values.price) * Number(values.qtd)));
-    setValues({name: '', price: '', qtd: ''});
+    setSum(sum + Number(values.price) * Number(values.qtd));
+    setValues({ name: "", price: "", qtd: "" });
   }
 
   function handlePuchaseRemove(name: string) {
     Alert.alert("Remover", `Deseja remover o Item: ${name}`, [
       {
         text: "Sim",
-        onPress: () =>
-        setItens((prevState) =>
+        onPress: () => {
+          setItens((prevState) =>
             prevState.filter((pushase) => pushase.name !== name)
-          ),
+          );
+          const item = itens
+            .filter((item) => {
+              return item.name === name;
+            })
+            .map((index) => Number(index.price) * Number(index.qtd));
+          if (item.length < 0) return;
+          setSum(sum - Number(item));
+        },
       },
       {
         text: "Não",
@@ -55,13 +71,18 @@ export function Home() {
   return (
     <Container>
       <Header title="Compras" total={itens.length} />
-      <TotalPurchase>R${sum} </TotalPurchase>
+      <TotalPurchase>
+        <CurrencyFormatter amount={sum} currency="BRL" />
+      </TotalPurchase>
       <Content>
         <Input_item>
           <Input
             placeholder="Incluir na lista.."
             value={values.name}
-            onChangeText={(text) => setValues((prevState) => ({ ...prevState, name: text }))}
+            autoFocus
+            onChangeText={(text: any) =>
+              setValues((prevState) => ({ ...prevState, name: text }))
+            }
           />
         </Input_item>
         <Input_price>
@@ -69,7 +90,9 @@ export function Home() {
             keyboardType="numeric"
             placeholder="Preço..."
             value={values.price}
-            onChangeText={(text) => setValues((prevState) => ({ ...prevState, price: text }))}
+            onChangeText={(text) =>
+              setValues((prevState) => ({ ...prevState, price: text }))
+            }
           />
         </Input_price>
         <Input_amount>
@@ -77,7 +100,9 @@ export function Home() {
             keyboardType="numeric"
             placeholder="Qtd..."
             value={values.qtd}
-            onChangeText={(text) => setValues((prevState) => ({ ...prevState, qtd: text }))}
+            onChangeText={(text) =>
+              setValues((prevState) => ({ ...prevState, qtd: text }))
+            }
           />
         </Input_amount>
 
@@ -91,11 +116,16 @@ export function Home() {
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <Purchase
-          name={item.name}
-          price={`R$ ${Number(item.price) * Number(item.qtd)}`}
-          amount={`Qtd: ${item.qtd}`}
-          onRemove={() => handlePuchaseRemove(item.name)}
-        />
+            name={item.name}
+            price={
+              <CurrencyFormatter
+                amount={Number(item.price) * Number(item.qtd)}
+                currency="BRL"
+              />
+            }
+            amount={`Qtd: ${item.qtd}`}
+            onRemove={() => handlePuchaseRemove(item.name)}
+          />
         )}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
